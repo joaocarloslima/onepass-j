@@ -6,8 +6,11 @@ import java.util.List;
 
 import br.com.fiap.conexao.ConnectionFactory;
 import br.com.fiap.model.Credencial;
+import br.com.fiap.service.CriptografiaService;
 
 public class CredencialDao {
+
+    private CriptografiaService service = new CriptografiaService();
     
     public void salvar(Credencial credencial) throws SQLException{
         var conexao = ConnectionFactory.getConnection();
@@ -15,7 +18,7 @@ public class CredencialDao {
         var ps = conexao.prepareStatement(sql);
         ps.setString(1, credencial.getLocal());
         ps.setString(2, credencial.getLogin());
-        ps.setString(3, credencial.getSenha());
+        ps.setString(3, service.criptografar( credencial.getSenha() ));
 
         ps.execute();
 
@@ -33,7 +36,7 @@ public class CredencialDao {
             lista.add(new Credencial(
                 rs.getString("local"), 
                 rs.getString("login"), 
-                rs.getString("senha")
+                service.descriptografar(rs.getString("senha"))
             ));
         }
 
