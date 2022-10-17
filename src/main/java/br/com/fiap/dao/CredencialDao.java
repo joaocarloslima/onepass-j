@@ -1,6 +1,8 @@
 package br.com.fiap.dao;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import br.com.fiap.conexao.ConnectionFactory;
 import br.com.fiap.model.Credencial;
@@ -18,6 +20,24 @@ public class CredencialDao {
         ps.execute();
 
         conexao.close();
+    }
+
+    public List<Credencial> listarTodas() throws SQLException{
+        var lista = new ArrayList<Credencial>();
+
+        var conexao = ConnectionFactory.getConnection();
+        var ps = conexao.prepareStatement("SELECT * FROM credenciais ORDER BY local");
+        var rs = ps.executeQuery();
+
+        while(rs.next()){
+            lista.add(new Credencial(
+                rs.getString("local"), 
+                rs.getString("login"), 
+                rs.getString("senha")
+            ));
+        }
+
+        return lista;
     }
 
 }
