@@ -1,5 +1,6 @@
 package br.com.fiap.dao;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,10 +11,19 @@ import br.com.fiap.service.CriptografiaService;
 
 public class CredencialDao {
 
+    // TODO carregar do arquivo de propriedades
+    private static final String URL = "jdbc:mysql://localhost:3306/senhas";
+    private static final String USUARIO = "root";
+    private static final String SENHA = "";
+
     private CriptografiaService service = new CriptografiaService();
+    private Connection conexao;
     
+    public CredencialDao() throws SQLException {
+        conexao = ConnectionFactory.getConnection(URL, USUARIO, SENHA);
+    }
+
     public void salvar(Credencial credencial) throws SQLException{
-        var conexao = ConnectionFactory.getConnection();
         String sql = "INSERT INTO credenciais (local, login, senha) VALUES (?, ?, ?)";
         var ps = conexao.prepareStatement(sql);
         ps.setString(1, credencial.getLocal());
@@ -22,13 +32,11 @@ public class CredencialDao {
 
         ps.execute();
 
-        conexao.close();
     }
 
     public List<Credencial> listarTodas() throws SQLException{
         var lista = new ArrayList<Credencial>();
 
-        var conexao = ConnectionFactory.getConnection();
         var ps = conexao.prepareStatement("SELECT * FROM credenciais ORDER BY local");
         var rs = ps.executeQuery();
 
